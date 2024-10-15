@@ -16,7 +16,7 @@ export default function Intro() {
     <div className="h-svh overflow-hidden">
       <motion.div style={{ y }} className="relative h-full">
         <Image
-          src="/images/filme_quarto.jpg"
+          src="/images/intro.jpg"
           fill
           alt="image"
           unoptimized={true}

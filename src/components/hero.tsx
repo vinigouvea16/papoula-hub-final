@@ -9,14 +9,14 @@ export default function Hero() {
         id="about-hero"
       >
         <Image
-          src="/images/heroimage2.jpg"
+          src="/images/flor1.jpg"
           width={560}
           height={620}
-          className="brightness-50 w-[180px] h-[354px]  md:w-[300px] md:h-[400px] lg:w-[400px] lg:h-[500px] xl:w-[560px] xl:h-[620px] object-cover"
+          className="brightness-75 w-[180px] h-[354px]  md:w-[300px] md:h-[400px] lg:w-[400px] lg:h-[500px] xl:w-[560px] xl:h-[620px] object-cover"
           alt="Picture of the author"
         />
         <Image
-          src="/images/projeto_nucleo2.jpg"
+          src="/images/flor3.jpg"
           width={560}
           height={620}
           unoptimized={true}
