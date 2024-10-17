@@ -663,7 +663,7 @@ export default function TwoColumnApplicationFormComponent() {
                   <AccessibleFormField
                     label="Email"
                     id="Email"
-                    videoSrc="/path-to-email-video.mp4"
+                    videoSrc="/videos/form1/email.mp4"
                   >
                     <Controller
                       name="Email"
