@@ -14,7 +14,7 @@ export default function Intro() {
 
   return (
     <div className="h-svh overflow-hidden">
-      <motion.div style={{ y }} className="relative h-full">
+      <motion.div style={{ y }} className="relative h-lvh">
         <Image
           src="/images/intro.jpg"
           fill
