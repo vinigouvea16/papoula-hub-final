@@ -77,7 +77,7 @@ export default function CTA() {
           ajuda de custo mensal
         </p>
 
-        <Link href="/application-form">
+        <Link href="/inscricao-historiaempesquisa">
           <Button
             size="lg"
             className="bg-papoula-blue text-black lg:text-xl lg:py-8 lg:px-10 hover:scale-110 hover:text-papoula-text hover:bg-papoula-blue"
