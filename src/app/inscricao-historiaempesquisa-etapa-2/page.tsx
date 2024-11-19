@@ -527,7 +527,11 @@ export default function TwoColumnApplicationFormStep2() {
                   )}
                 </FormField>
 
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="hover:bg-papoula-blue"
+                >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
