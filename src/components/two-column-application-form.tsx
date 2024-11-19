@@ -602,8 +602,15 @@ export default function TwoColumnApplicationFormComponent() {
                     Formulário de Inscrição
                   </h2>
                   <p>Seleção de Roteiristas para o Núcleo de Desenvolvimento</p>
+                  <span className="p-8 italic text-xl text-red-500">
+                    As inscrições para a primeira edição do núcleo “História em
+                    Pesquisa” se encerraram no dia 19 de novembro de 2024.
+                    Recebemos um grande número de inscrições e agradecemos o
+                    interesse. Os aprovados para as etapas seguintes serão
+                    contactados diretamente pela equipe.
+                  </span>
                 </div>
-                <div className="absolute right-4 top-10 z-10">
+                <div className="absolute right-4 z-10">
                   <svg
                     width="80"
                     height="80"
@@ -651,9 +658,7 @@ export default function TwoColumnApplicationFormComponent() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold">
-                  ETAPA 1 (CLASSIFICATÓRIA)
-                </h3>
+                <h3 className="text-2xl font-semibold">ETAPA 1</h3>
 
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold">
@@ -668,6 +673,7 @@ export default function TwoColumnApplicationFormComponent() {
                     <Controller
                       name="Email"
                       control={control}
+                      disabled
                       render={({ field }) => (
                         <Input
                           {...field}
@@ -691,6 +697,7 @@ export default function TwoColumnApplicationFormComponent() {
                   >
                     <Controller
                       name="Nome Social"
+                      disabled
                       control={control}
                       render={({ field }) => (
                         <Input {...field} placeholder="Seu Nome" />
@@ -715,6 +722,7 @@ export default function TwoColumnApplicationFormComponent() {
                         <RadioGroup
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem
@@ -755,6 +763,7 @@ export default function TwoColumnApplicationFormComponent() {
                     <Controller
                       name="Ano de Nascimento"
                       control={control}
+                      disabled
                       render={({ field }) => (
                         <Input
                           type="number"
@@ -784,6 +793,7 @@ export default function TwoColumnApplicationFormComponent() {
                       render={({ field }) => (
                         <Select
                           onValueChange={field.onChange}
+                          disabled
                           value={field.value}
                         >
                           <SelectTrigger aria-label="Selecione uma opção">
@@ -816,6 +826,7 @@ export default function TwoColumnApplicationFormComponent() {
                       <Controller
                         name="Raça/Etnia (Especifique)"
                         control={control}
+                        disabled
                         render={({ field }) => (
                           <Input {...field} placeholder="Especifique" />
                         )}
@@ -840,6 +851,7 @@ export default function TwoColumnApplicationFormComponent() {
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <SelectTrigger aria-label="Escolha a opção de gênero e orientação sexual com que se identifica">
                             <SelectValue placeholder="Escolha a opção de gênero e orientação sexual com que se identifica" />
@@ -920,6 +932,7 @@ export default function TwoColumnApplicationFormComponent() {
                         <RadioGroup
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="Sim" id="pcd-sim" />
@@ -955,6 +968,7 @@ export default function TwoColumnApplicationFormComponent() {
                     <Controller
                       name="Recursos A11y"
                       control={control}
+                      disabled
                       render={({ field }) => (
                         <Textarea
                           {...field}
@@ -981,6 +995,7 @@ export default function TwoColumnApplicationFormComponent() {
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <SelectTrigger aria-label="Selecione uma opção">
                             <SelectValue placeholder="Selecione uma opção" />
@@ -1033,6 +1048,7 @@ export default function TwoColumnApplicationFormComponent() {
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <SelectTrigger aria-label="Selecione seu nível de experiência">
                             <SelectValue placeholder="Selecione seu nível de experiência" />
@@ -1079,6 +1095,7 @@ export default function TwoColumnApplicationFormComponent() {
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <SelectTrigger aria-label="Selecione sua formação">
                             <SelectValue placeholder="Selecione sua formação" />
@@ -1137,6 +1154,7 @@ export default function TwoColumnApplicationFormComponent() {
                               <Checkbox
                                 id={`ods-identificacao-${ods}`}
                                 checked={field.value.includes(ods)}
+                                disabled
                                 onCheckedChange={(checked) => {
                                   if (checked) {
                                     field.onChange([...field.value, ods])
@@ -1185,6 +1203,7 @@ export default function TwoColumnApplicationFormComponent() {
                               <Checkbox
                                 id={`ods-projetos-${ods}`}
                                 checked={field.value.includes(ods)}
+                                disabled
                                 onCheckedChange={(checked) => {
                                   if (checked) {
                                     field.onChange([...field.value, ods])
@@ -1242,6 +1261,7 @@ export default function TwoColumnApplicationFormComponent() {
                               <Checkbox
                                 id={`motivacao-${option}`}
                                 checked={field.value.includes(option)}
+                                disabled
                                 onCheckedChange={(checked) => {
                                   if (checked) {
                                     field.onChange([...field.value, option])
@@ -1280,6 +1300,7 @@ export default function TwoColumnApplicationFormComponent() {
                     <Controller
                       name="Motivação (Outro)"
                       control={control}
+                      disabled
                       render={({ field }) => (
                         <Input {...field} placeholder="Outros motivos" />
                       )}
@@ -1294,8 +1315,9 @@ export default function TwoColumnApplicationFormComponent() {
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={true}
                   aria-live="polite"
+                  className="bg-red-500"
                 >
                   {isSubmitting ? (
                     <>

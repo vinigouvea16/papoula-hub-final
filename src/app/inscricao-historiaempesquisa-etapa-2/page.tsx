@@ -9,14 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Loader2, VideoIcon } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 const formSchema = z.object({
   Email: z.string().email({ message: 'Email inválido' }),
@@ -29,63 +22,36 @@ const formSchema = z.object({
   'Projetos Pessoais': z
     .string()
     .min(1, { message: 'Este campo é obrigatório' }),
-  'Portfolio/Currículo': z.string().url({ message: 'URL inválida' }).optional(),
+  'Portfolio/Currículo': z
+    .union([z.string().url({ message: 'URL inválida' }), z.string().length(0)])
+    .optional(),
   'Experiência Pesquisa': z
     .string()
     .min(1, { message: 'Este campo é obrigatório' }),
-  // 'ODS Identificação': z
-  //   .array(z.string())
-  //   .min(1, { message: 'Selecione pelo menos um ODS' }),
   'Identificação ODS Razão': z
     .string()
     .min(1, { message: 'Este campo é obrigatório' }),
-  // 'ODS Projetos': z
-  //   .array(z.string())
-  //   .min(1, { message: 'Selecione pelo menos um ODS' }),
   'Projetos ODS Relação': z
+    .string()
+    .min(1, { message: 'Este campo é obrigatório' }),
+  'Nos conte mais sobre você': z
     .string()
     .min(1, { message: 'Este campo é obrigatório' }),
 })
 
 type FormData = z.infer<typeof formSchema>
 
-interface AccessibleFormFieldProps {
+interface FormFieldProps {
   label: string
   id: string
   children: React.ReactNode
-  videoSrc: string
 }
 
-const AccessibleFormField: React.FC<AccessibleFormFieldProps> = ({
-  label,
-  id,
-  children,
-  videoSrc,
-}) => (
+const FormField: React.FC<FormFieldProps> = ({ label, id, children }) => (
   <div className="space-y-2">
-    <div className="lg:flex items-center space-x-2">
-      <Label htmlFor={id} className="text-base">
-        {label}
-      </Label>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="default" size="icon" className="my-1">
-            <VideoIcon className="h-4 w-4" />
-            <span className="sr-only">
-              Assista vídeo informativo para:{label}
-            </span>
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Vídeo acessível para: {label}</DialogTitle>
-          </DialogHeader>
-          <video src={videoSrc} controls className="w-full">
-            Your browser does not support the video tag.
-          </video>
-        </DialogContent>
-      </Dialog>
-    </div>
+    <Label htmlFor={id} className="text-base">
+      {label}
+    </Label>
     {children}
   </div>
 )
@@ -106,10 +72,11 @@ export default function TwoColumnApplicationFormStep2() {
       'Experiência Roteiro': '',
       'Experiência Núcleos': '',
       'Projetos Pessoais': '',
-      'Portfolio/Currículo': '',
+      'Portfolio/Currículo': undefined,
       'Experiência Pesquisa': '',
       'Identificação ODS Razão': '',
       'Projetos ODS Relação': '',
+      'Nos conte mais sobre você': '',
     },
   })
 
@@ -148,6 +115,8 @@ export default function TwoColumnApplicationFormStep2() {
         body: JSON.stringify(data),
       })
 
+      const responseData = await response.json()
+
       if (response.ok) {
         setIsSubmitted(true)
         setCooldownTime(300) // 5 minutes cooldown
@@ -160,7 +129,29 @@ export default function TwoColumnApplicationFormStep2() {
           icon: '🎉',
         })
       } else {
-        toast.error('Erro ao enviar formulário. Por favor, tente novamente.', {
+        throw new Error(responseData.message || 'Erro ao enviar formulário')
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Erro desconhecido ao enviar formulário'
+
+      if (
+        errorMessage.includes('não corresponde a nenhum registro da Etapa 1')
+      ) {
+        toast.error(errorMessage, {
+          style: {
+            background: '#F44336',
+            color: '#FFFFFF',
+            border: 'none',
+          },
+          icon: '❌',
+          duration: 10000, // Longer duration for this important message
+        })
+      } else {
+        toast.error(`Erro ao enviar formulário: ${errorMessage}`, {
           style: {
             background: '#F44336',
             color: '#FFFFFF',
@@ -169,16 +160,6 @@ export default function TwoColumnApplicationFormStep2() {
           icon: '❌',
         })
       }
-    } catch (error) {
-      console.error('Error submitting form:', error)
-      toast.error('Erro ao enviar formulário. Por favor, tente novamente.', {
-        style: {
-          background: '#F44336',
-          color: '#FFFFFF',
-          border: 'none',
-        },
-        icon: '❌',
-      })
     } finally {
       setIsSubmitting(false)
     }
@@ -349,11 +330,7 @@ export default function TwoColumnApplicationFormStep2() {
                 </div>
                 <h2 className="text-4xl font-semibold italic">ETAPA 2</h2>
 
-                <AccessibleFormField
-                  label="Email"
-                  id="Email"
-                  videoSrc="/videos/form1/email.mp4"
-                >
+                <FormField label="Email" id="Email">
                   <Controller
                     name="Email"
                     control={control}
@@ -367,17 +344,16 @@ export default function TwoColumnApplicationFormStep2() {
                   {errors.Email && (
                     <p className="text-red-500">{errors.Email.message}</p>
                   )}
-                </AccessibleFormField>
+                </FormField>
 
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold italic">
                     EXPERIÊNCIA COM ROTEIRO E AUDIOVISUAL
                   </h3>
 
-                  <AccessibleFormField
+                  <FormField
                     label="Experiência em Roteiro e Audiovisual"
                     id="Experiencia Roteiro"
-                    videoSrc="/videos/form2/experienciaRoteiro.mp4"
                   >
                     <Controller
                       name="Experiência Roteiro"
@@ -394,12 +370,11 @@ export default function TwoColumnApplicationFormStep2() {
                         {errors['Experiência Roteiro'].message}
                       </p>
                     )}
-                  </AccessibleFormField>
+                  </FormField>
 
-                  <AccessibleFormField
+                  <FormField
                     label="Experiência em Núcleos Criativos"
                     id="Experiência Núcleos"
-                    videoSrc="/videos/form2/experienciaNucleo.mp4"
                   >
                     <Controller
                       name="Experiência Núcleos"
@@ -416,20 +391,16 @@ export default function TwoColumnApplicationFormStep2() {
                         {errors['Experiência Núcleos'].message}
                       </p>
                     )}
-                  </AccessibleFormField>
+                  </FormField>
 
-                  <AccessibleFormField
-                    label="Projetos Pessoais"
-                    id="Projetos Pessoais"
-                    videoSrc="/videos/form2/projetospessoais.mp4"
-                  >
+                  <FormField label="Projetos Pessoais" id="Projetos Pessoais">
                     <Controller
                       name="Projetos Pessoais"
                       control={control}
                       render={({ field }) => (
                         <Textarea
                           {...field}
-                          placeholder="Descreva projetos pessoais que você tenha desenvolvido ou esteja interessado em desenvolver"
+                          placeholder="Liste alguns projetos pessoais com que tenha trabalhado ou esteja trabalhando atualmente. Não é necessário entrar em detalhes, mencione o principal tema e o que te motiva a trabalhar com o assunto/formato/gênero."
                         />
                       )}
                     />
@@ -438,12 +409,11 @@ export default function TwoColumnApplicationFormStep2() {
                         {errors['Projetos Pessoais'].message}
                       </p>
                     )}
-                  </AccessibleFormField>
+                  </FormField>
 
-                  <AccessibleFormField
+                  <FormField
                     label="Portfólio/Currículo (Opcional)"
                     id="Portfolio/Currículo"
-                    videoSrc="/videos/form2/portfolio.mp4"
                   >
                     <Controller
                       name="Portfolio/Currículo"
@@ -460,41 +430,19 @@ export default function TwoColumnApplicationFormStep2() {
                         {errors['Portfolio/Currículo'].message}
                       </p>
                     )}
-                  </AccessibleFormField>
+                  </FormField>
                 </div>
 
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold italic">
-                    RELAÇÃO COM PESQUISA CIENTÍFICA E ODS
+                    IDENTIFICAÇÃO COM OS OBJETIVOS DE DESENVOLVIMENTO
+                    SUSTENTÁVEL
                   </h3>
 
-                  <AccessibleFormField
-                    label="Experiência com Pesquisa Científica/Acadêmica"
-                    id="Experiência Pesquisa"
-                    videoSrc="/videos/form2/experienciaComPesquisa.mp4"
-                  >
-                    <Controller
-                      name="Experiência Pesquisa"
-                      control={control}
-                      render={({ field }) => (
-                        <Textarea
-                          {...field}
-                          placeholder="Explique sua experiência ou envolvimento com pesquisa científica ou acadêmica"
-                        />
-                      )}
-                    />
-                    {errors['Experiência Pesquisa'] && (
-                      <p className="text-red-500">
-                        {errors['Experiência Pesquisa'].message}
-                      </p>
-                    )}
-                  </AccessibleFormField>
-
                   {/* Textarea ODS identificação */}
-                  <AccessibleFormField
+                  <FormField
                     label="Por que você se identifica com os ODS selecionados na etapa anterior?"
                     id="Identificação ODS Razão"
-                    videoSrc="/videos/form2/identificacaoODS.mp4"
                   >
                     <Controller
                       name="Identificação ODS Razão"
@@ -511,13 +459,12 @@ export default function TwoColumnApplicationFormStep2() {
                         {errors['Identificação ODS Razão'].message}
                       </p>
                     )}
-                  </AccessibleFormField>
+                  </FormField>
 
                   {/* Textarea ODS Projeto */}
-                  <AccessibleFormField
+                  <FormField
                     label="Descreva como seus projetos se relacionam com os ODS selecionados na etapa anterior"
                     id="Projetos ODS Relação"
-                    videoSrc="/videos/form2/projetosODS.mp4"
                   >
                     <Controller
                       name="Projetos ODS Relação"
@@ -534,8 +481,51 @@ export default function TwoColumnApplicationFormStep2() {
                         {errors['Projetos ODS Relação'].message}
                       </p>
                     )}
-                  </AccessibleFormField>
+                  </FormField>
                 </div>
+
+                {/* Experiência e interesse em Pesquisa */}
+                <FormField
+                  label="Experiência e interesse em Pesquisa"
+                  id="Experiência Pesquisa"
+                >
+                  <Controller
+                    name="Experiência Pesquisa"
+                    control={control}
+                    render={({ field }) => (
+                      <Textarea
+                        {...field}
+                        placeholder="Conte sobre sua experiência e envolvimento com pesquisa, podendo ser acadêmica, científica, investigação de tema para projetos de escrita etc."
+                      />
+                    )}
+                  />
+                  {errors['Experiência Pesquisa'] && (
+                    <p className="text-red-500">
+                      {errors['Experiência Pesquisa'].message}
+                    </p>
+                  )}
+                </FormField>
+
+                <FormField
+                  label="Nos conte mais sobre você:"
+                  id="Nos conte mais sobre você"
+                >
+                  <Controller
+                    name="Nos conte mais sobre você"
+                    control={control}
+                    render={({ field }) => (
+                      <Textarea
+                        {...field}
+                        placeholder="Um espaço para você expressar qualquer coisa que não foi abordada nas questões anteriores, pode falar dos seus hobbies, da sua história, ou de qualquer outro ponto que achar relevante para equipe tomar conhecimento."
+                      />
+                    )}
+                  />
+                  {errors['Nos conte mais sobre você'] && (
+                    <p className="text-red-500">
+                      {errors['Nos conte mais sobre você'].message}
+                    </p>
+                  )}
+                </FormField>
 
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
@@ -555,27 +545,30 @@ export default function TwoColumnApplicationFormStep2() {
               Informações sobre o Formulário - Etapa 2
             </h2>
             <p className="mb-4">
-              Esta é a segunda etapa do processo de seleção para o Núcleo
-              Criativo de Desenvolvimento de Propriedade Intelectual. Nesta
-              fase, buscamos entender melhor sua experiência e relação com
-              roteiro, audiovisual, pesquisa científica e os Objetivos de
-              Desenvolvimento Sustentável (ODS).
+              Esta é a segunda etapa do processo de seleção para o Núcleo de
+              Desenvolvimento de Roteiros “História em Pesquisa”. Nesta fase,
+              queremos conhecer melhor você, e entender seus interesses e
+              experiências na área do audiovisual.
             </p>
-            <h3 className="text-xl font-semibold mb-2">Instruções:</h3>
+            <h3 className="text-xl font-semibold mb-2">Importante:</h3>
             <ul className="list-disc list-inside mb-4">
               <li>Certifique-se de usar o mesmo email utilizado na Etapa 1.</li>
-              <li>Seja detalhado e específico em suas respostas.</li>
+              <li>
+                Seja transparente em suas respostas – não há resposta certa ou
+                errada. Quanto mais entendermos o seu perfil, melhor poderemos
+                conectá-lo a uma pesquisa.
+              </li>
             </ul>
             <h3 className="text-xl font-semibold mb-2">Próximos Passos:</h3>
             <p className="mb-4">
-              Após o envio deste formulário, sua inscrição completa (Etapa 1 e
-              2) será analisada por nossa equipe. Os candidatos selecionados
-              serão contatados para as próximas fases do processo.
+              Você tem até o dia 29 de novembro para completar suas respostas.
+              Os selecionados serão contactados pela equipe para uma rápida
+              entrevista.
             </p>
             <h3 className="text-xl font-semibold mb-2">Lembre-se:</h3>
 
             <p>
-              Quaisquer dúvidas sobre o processo podem ser enviadas ao e-mail:{' '}
+              Qualquer dúvida sobre o processo pode ser enviada ao e-mail:{' '}
               <a
                 href="mailto:contato@papoulahub.com"
                 className="font-bold underline text-sky-900 tracking-wide"

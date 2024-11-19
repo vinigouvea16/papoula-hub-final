@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
     } else {
       return NextResponse.json(
         {
-          message: 'No matching record found for the provided email',
+          message:
+            'O email fornecido não corresponde a nenhum registro da Etapa 1. Por favor, verifique se você está usando o mesmo email utilizado anteriormente.',
         },
         { status: 404 },
       )
@@ -40,7 +41,8 @@ export async function POST(req: NextRequest) {
     console.error('Error submitting form:', error)
     return NextResponse.json(
       {
-        message: 'Error submitting form',
+        message:
+          'Ocorreu um erro ao enviar o formulário. Por favor, tente novamente.',
       },
       { status: 500 },
     )
